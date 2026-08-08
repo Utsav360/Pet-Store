@@ -23,7 +23,6 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import SendIcon from '@mui/icons-material/Send';
 import SaveIcon from '@mui/icons-material/Save';
-import ButtonUnstyled, { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 import PropTypes from 'prop-types';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
@@ -270,7 +269,7 @@ function Pets() {
       <Container maxWidth="md">
         <div className="searchContainer">
             <TextField id="Search"label="Search Any Pet Details Here" variant="filled" value={search} onChange={handleSearchChange} sx={{ m: 1, width: '40ch' }}/>   &nbsp;&nbsp;&nbsp;&nbsp;
-            <SvgButton onClick={searchPet} variant="filled" sx={{ m: 1.5}}>SEARCH</SvgButton> 
+            <SvgButton onClick={searchPet} sx={{ m: 1.5}}>SEARCH</SvgButton>
           </div>
         </Container>
         <br />  
@@ -404,7 +403,7 @@ const CustomButtonRoot = styled(ButtonRoot)(
   }
 
   &:hover,
-  &.${buttonUnstyledClasses.focusVisible} {
+  &:focus-visible {
     .borderEffect {
       stroke-dashoffset: -600;
     }
@@ -415,11 +414,11 @@ const CustomButtonRoot = styled(ButtonRoot)(
   }
 
   &:focus,
-  &.${buttonUnstyledClasses.focusVisible} {
+  &:focus-visible {
     outline: none;
   }
 
-  &.${buttonUnstyledClasses.active} { 
+  &:active {
     & .bg {
       fill: var(--active-color);
       transition: fill 300ms ease-out;
@@ -448,8 +447,30 @@ const CustomButtonRoot = styled(ButtonRoot)(
 );
 
 const SvgButton = React.forwardRef(function SvgButton(props, ref) {
-  return <ButtonUnstyled {...props} component={CustomButtonRoot} ref={ref} />;
+  const { onClick, ...other } = props;
+
+  function handleKeyDown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onClick?.(event);
+    }
+  }
+
+  return (
+    <CustomButtonRoot
+      {...other}
+      ref={ref}
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+    />
+  );
 });
+
+SvgButton.propTypes = {
+  onClick: PropTypes.func,
+};
 
 
 
